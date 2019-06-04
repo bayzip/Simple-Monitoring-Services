@@ -1,37 +1,45 @@
 #!/bin/bash
 
-#Color
+#Define Color Code
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-#Log Status
+#Create directory to check statuslog
 if [ ! -d /opt/statuslog/ ] || [ ! -d /opt/statuslog/monitor ]; then
 	mkdir -p /opt/statuslog/
 	mkdir /opt/statuslog/monitor
 fi
 
-#Param
-namaservice=$1
-Running=$(echo -e "${GREEN}Running${NC}")
-NotFound=$(echo -e "${RED}Not-Found${NC}")
-NotWorked=$(echo -e "${RED}Down${NC}")
+#Parameter
+namaService=$1
+running=$(echo -e "${GREEN}running${NC}")
+notFound=$(echo -e "${RED}Not-Found${NC}")
+notWorked=$(echo -e "${RED}Down${NC}")
 pathCheck=/opt/statuslog/monitor/dataService
 
 #Function
 checkservice () {
-	while read namaservice; do
-		service $namaservice status &> /opt/statuslog/$namaservice.log
-		par_Active=$(cat /opt/statuslog/$namaservice.log | grep Active | awk '{ print $2 }' | cut -f 2,1 -d '(' --output-delimiter='' | cut -f 2,1 -d ')' --output-delimiter='')
-		par_Running=$(grep -c "running" /opt/statuslog/$namaservice.log)
-		par_Noservice=$(cat /opt/statuslog/$namaservice.log | grep Unit | awk '{ print $4 $5 $6 }' | cut -f 1 -d '.' --output-delimiter='')
-	        if [[ $par_Active == active ]] || [[ $par_Running -gt 0 ]] ; then
-        	        printf "%02s\t\t\t%02s\t\t\t\t%02s\n" $namaservice $Running $(cat /opt/statuslog/$namaservice.log | grep Active | awk '{ print $9 }')
-                	rm -rf  /opt/statuslog/$namaservice.log
-	        elif [[ $par_Noservice == notbefound ]]; then
-			printf "%02s\t\t\t%02s\t\t\t%02s\n" $namaservice $NotFound -
+	while read namaService; do
+		# Output service status in File
+		service $namaService status &> /opt/statuslog/$namaService.log
+
+		# Parsing string to check service
+		# Parsing "Active" word
+		parActive=$(cat /opt/statuslog/$namaService.log | grep Active | awk '{ print $2 }' | cut -f 2,1 -d '(' --output-delimiter='' | cut -f 2,1 -d ')' --output-delimiter='')
+		# Parsing "Running" word
+		parRunning=$(grep -c "running" /opt/statuslog/$namaService.log)
+		# Parsing "notbefound" word
+		parNoservice=$(cat /opt/statuslog/$namaService.log | grep Unit | awk '{ print $4 $5 $6 }' | cut -f 1 -d '.' --output-delimiter='')
+	    
+		# Check Services
+		if [[ $parActive == active ]] || [[ $parRunning -gt 0 ]] ; then
+			printf "%02s\t\t\t%02s\t\t\t\t%02s\n" $namaService $running $(cat /opt/statuslog/$namaService.log | grep Active | awk '{ print $9 }')
+			rm -rf  /opt/statuslog/$namaService.log
+		elif [[ $parNoservice == notbefound ]]; then
+			printf "%02s\t\t\t%02s\t\t\t%02s\n" $namaService $notFound -
 		else
-			printf "%02s\t\t\t%02s\t\t\t%02s\n" $namaservice $NotWorked -
+			printf "%02s\t\t\t%02s\t\t\t%02s\n" $namaService $notWorked -
        		fi
 	done < $pathCheck
 }
@@ -46,7 +54,7 @@ elif [ $1 == add ]; then
 	else
 		echo "$2" >> /opt/statuslog/monitor/dataService
 	fi
-elif [ $1 == dell ]; then
+elif [ $1 == del ]; then
 	sed -i "/$2/d" /opt/statuslog/monitor/service.data
 else
 	printf "%02s\t\t\t%02s\t\t\t\t%02s\n" Service Status Uptimie
