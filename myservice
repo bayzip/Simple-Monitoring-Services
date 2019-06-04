@@ -1,0 +1,58 @@
+#!/bin/bash
+
+#Color
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+#Log Status
+if [ ! -d /opt/statuslog/ ] || [ ! -d /opt/statuslog/monitor ]; then
+	mkdir -p /opt/statuslog/
+	mkdir /opt/statuslog/monitor
+fi
+
+#Param
+namaservice=$1
+Running=$(echo -e "${GREEN}Running${NC}")
+NotFound=$(echo -e "${RED}Not-Found${NC}")
+NotWorked=$(echo -e "${RED}Down${NC}")
+pathCheck=/opt/statuslog/monitor/dataService
+
+#Function
+checkservice () {
+	while read namaservice; do
+		service $namaservice status &> /opt/statuslog/$namaservice.log
+		par_Active=$(cat /opt/statuslog/$namaservice.log | grep Active | awk '{ print $2 }' | cut -f 2,1 -d '(' --output-delimiter='' | cut -f 2,1 -d ')' --output-delimiter='')
+		par_Running=$(grep -c "running" /opt/statuslog/$namaservice.log)
+		par_Noservice=$(cat /opt/statuslog/$namaservice.log | grep Unit | awk '{ print $4 $5 $6 }' | cut -f 1 -d '.' --output-delimiter='')
+	        if [[ $par_Active == active ]] || [[ $par_Running -gt 0 ]] ; then
+        	        printf "%02s\t\t\t%02s\t\t\t\t%02s\n" $namaservice $Running $(cat /opt/statuslog/$namaservice.log | grep Active | awk '{ print $9 }')
+                	rm -rf  /opt/statuslog/$namaservice.log
+	        elif [[ $par_Noservice == notbefound ]]; then
+			printf "%02s\t\t\t%02s\t\t\t%02s\n" $namaservice $NotFound -
+		else
+			printf "%02s\t\t\t%02s\t\t\t%02s\n" $namaservice $NotWorked -
+       		fi
+	done < $pathCheck
+}
+
+if [ $1 == all ]; then
+	printf "%02s\t\t\t%02s\t\t\t\t%02s\n" Service Status Uptimie
+	checkservice
+elif [ $1 == add ]; then
+	touch /opt/statuslog/monitor/dataService
+	if grep -Fxq "$2" /opt/statuslog/monitor/dataService; then
+		echo "Service telah ada"
+	else
+		echo "$2" >> /opt/statuslog/monitor/dataService
+	fi
+elif [ $1 == dell ]; then
+	sed -i "/$2/d" /opt/statuslog/monitor/service.data
+else
+	printf "%02s\t\t\t%02s\t\t\t\t%02s\n" Service Status Uptimie
+	echo "$1" > /opt/statuslog/monitor/Service
+	pathCheck=/opt/statuslog/monitor/Service
+	checkservice	
+	rm -rf /opt/statuslog/monitor/Service
+fi
+
