@@ -4,7 +4,7 @@ A simple script to monitoring service Linux. We created it to help user check se
 ## Installion Script
 This script tested and worked on Centos. First, you need to make sure that curl has been installed on your server. After that, you can run this simple command
 ```
-curl -O https://raw.githubusercontent.com/bayuadinh/Simple-Monitoring-Services/master/myservice && chmod +x myservice && mv myservice /usr/bin && echo "myservice all" > /root/.bashrc
+curl -O https://raw.githubusercontent.com/bayuadinh/Simple-Monitoring-Services/master/myservice && chmod +x myservice && mv myservice /usr/bin && echo "myservice all" >> /root/.bashrc
 ```
 
 ## Using Script

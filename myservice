@@ -37,9 +37,9 @@ checkservice () {
 			printf "%02s\t\t\t%02s\t\t\t\t%02s\n" $namaService $running $(cat /opt/statuslog/$namaService.log | grep Active | awk '{ print $9 }')
 			rm -rf  /opt/statuslog/$namaService.log
 		elif [[ $parNoservice == notbefound ]]; then
-			printf "%02s\t\t\t%02s\t\t\t%02s\n" $namaService $notFound -
+			printf "%02s\t\t\t%02s\t\t\t\t%02s\n" $namaService $notFound -
 		else
-			printf "%02s\t\t\t%02s\t\t\t%02s\n" $namaService $notWorked -
+			printf "%02s\t\t\t%02s\t\t\t\t%02s\n" $namaService $notWorked -
        		fi
 	done < $pathCheck
 }
