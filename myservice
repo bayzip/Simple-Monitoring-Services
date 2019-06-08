@@ -55,7 +55,7 @@ elif [ $1 == add ]; then
 		echo "$2" >> /opt/statuslog/monitor/dataService
 	fi
 elif [ $1 == del ]; then
-	sed -i "/$2/d" /opt/statuslog/monitor/service.data
+	sed -i "/$2/d" /opt/statuslog/monitor/dataService
 else
 	printf "%02s\t\t\t%02s\t\t\t\t%02s\n" Service Status Uptimie
 	echo "$1" > /opt/statuslog/monitor/Service
