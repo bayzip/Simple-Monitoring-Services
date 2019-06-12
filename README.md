@@ -1,6 +1,8 @@
 # Simple-Monitoring-Services
 A simple script to monitoring service Linux. We created it to help user check service every time when log-in server. This script will help sysadmin vs DevOps to know service running or down.
 
+![alt text](https://i.ibb.co/D1grpQ9/simpel-script.png)
+
 ## Installion Script
 This script tested and worked on Centos. First, you need to make sure that curl has been installed on your server. After that, you can run this simple command
 ```
