@@ -17,7 +17,7 @@ myservice add (your-service)
 ex
 myservice add nginx
 ```
-All service will be add into this location /opt/statuslog/monitor/dataService. 
+All service will be add into /opt/statuslog/monitor/dataService. 
 
 ### Delete Service
 You can simple delete service too with following command
